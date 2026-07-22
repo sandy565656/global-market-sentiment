@@ -15,5 +15,15 @@ function renderGlobal(){const markets=state.data?.markets||{};const scores=Objec
 function renderMarket(){const m=META[state.selected],d=state.data?.markets?.[state.selected]||{};const [label]=level(d.score);$('marketCode').textContent=m.code;$('marketName').textContent=m.name;$('sourceBadge').textContent=d.sourceLabel||'等待数据';$('marketScore').textContent=fmt(d.score,0);$('rawValue').textContent=Number.isFinite(d.rawValue)?`${fmt(d.rawValue)}${d.rawUnit||''}`:'—';$('percentile').textContent=Number.isFinite(d.percentile)?`${fmt(d.percentile,0)}%`:'—';$('scoreBar').style.left=`calc(${Math.min(100,Math.max(0,d.score||0))}% - 1px)`;$('marketStatus').textContent=label;$('marketChange').textContent=Number.isFinite(d.change)?`较前值 ${d.change>=0?'+':''}${fmt(d.change)}`:'—';$('marketInsight').textContent=d.insight||'等待首次自动更新；数据缺失时不会用示例数字替代。';draw(d.history||[]);$('logicPanel').innerHTML=`<h4>${m.logic}</h4>${m.factors.map(x=>`<div class="factor"><b>${x[0]}</b><span>${x[1]}</span></div>`).join('')}<div class="logic-note">${m.note}</div>`}
 async function load(){try{const endpoint=location.hostname.includes('github.io')?'data/sentiment.json':`api/sentiment?t=${Date.now()}`;const r=await fetch(endpoint,{cache:'no-store'});if(!r.ok)throw Error(r.status);state.data=await r.json()}catch(e){state.data={generatedAt:null,markets:{}}}renderGlobal();renderTabs();renderMarket()}
 $('logicToggle').onclick=()=>{const p=$('logicPanel'),open=p.hidden;p.hidden=!open;$('logicToggle').setAttribute('aria-expanded',open);$('logicToggle').querySelector('span').textContent=open?'−':'＋'};
-$('shareBtn').onclick=async()=>{const payload={title:'全球市场情绪',text:'查看五个主要市场的实时恐慌压力与构成逻辑',url:location.href};try{if(navigator.share)await navigator.share(payload);else{await navigator.clipboard.writeText(location.href);alert('链接已复制')}}catch(e){}};
+const SHARE_URL='https://global-market-sentiment.sunjing55555.workers.dev/';
+const SHARE_PAYLOAD={title:'全球市场情绪｜五大市场恐慌压力仪表盘',text:'一页查看A股、港股、美股、日股与韩股的实时恐慌压力、历史分位和构成逻辑。',url:SHARE_URL};
+const isWechat=/MicroMessenger/i.test(navigator.userAgent);
+function toast(text){const el=$('toast');el.textContent=text;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),1800)}
+function openShare(){if(isWechat){$('wechatTip').hidden=false;document.body.style.overflow='hidden';return}$('shareSheet').hidden=false;document.body.style.overflow='hidden'}
+function closeShare(){$('shareSheet').hidden=true;$('wechatTip').hidden=true;document.body.style.overflow=''}
+async function copyShare(){try{await navigator.clipboard.writeText(SHARE_URL)}catch(e){const t=document.createElement('textarea');t.value=SHARE_URL;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}closeShare();toast('链接已复制，可粘贴到微信')}
+async function nativeShare(){try{if(navigator.share)await navigator.share(SHARE_PAYLOAD);else await copyShare()}catch(e){if(e?.name!=='AbortError')await copyShare()}}
+$('shareBtn').onclick=openShare;$('shareInlineBtn').onclick=openShare;$('nativeShareBtn').onclick=nativeShare;$('copyLinkBtn').onclick=copyShare;
+document.querySelectorAll('[data-close-share],[data-close-wechat]').forEach(el=>el.onclick=closeShare);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeShare()});
 load();setInterval(load,300000);
