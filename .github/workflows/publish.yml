@@ -3,14 +3,16 @@ on:
   push:
     branches: [main]
   schedule:
-    - cron: '*/5 * * * *'
+    # Stagger away from the busiest exact-hour cron boundary.
+    - cron: '2-57/10 * * * *'
+    - cron: '7-57/10 * * * *'
   workflow_dispatch:
 permissions:
   contents: read
   pages: write
   id-token: write
 concurrency:
-  group: pages
+  group: market-sentiment-pages
   cancel-in-progress: false
 jobs:
   publish:
@@ -26,6 +28,17 @@ jobs:
           python-version: '3.12'
       - name: Refresh market data
         run: python scripts/update_data.py
+      - name: Validate fresh output
+        run: |
+          python - <<'PY'
+          import json
+          from datetime import datetime, timezone
+          d=json.load(open('data/sentiment.json'))
+          ts=datetime.fromisoformat(d['generatedAt'])
+          age=(datetime.now(timezone.utc)-ts).total_seconds()
+          assert age < 300, f'Generated data is stale: {age:.0f}s'
+          assert len(d.get('markets',{})) == 5, 'Expected five markets'
+          PY
       - name: Build public artifact
         run: |
           mkdir -p _site/data
@@ -38,4 +51,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-# Keep queued scheduled refreshes instead of cancelling an active deployment.
