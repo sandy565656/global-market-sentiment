@@ -11,10 +11,11 @@ permissions:
   id-token: write
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   publish:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -31,12 +32,10 @@ jobs:
           cp index.html styles.css app.js .nojekyll _site/
           cp data/sentiment.json _site/data/
       - uses: actions/configure-pages@v5
-        with:
-          enablement: true
       - uses: actions/upload-pages-artifact@v4
         with:
           path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-# Retriggered after GitHub Pages was enabled.
+# Keep queued scheduled refreshes instead of cancelling an active deployment.
