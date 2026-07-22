@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="全球主要市场恐慌压力与波动率监测">
+  <title>全球市场情绪</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div><div class="ambient ambient-b"></div>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">GLOBAL MARKET SENTIMENT</p>
+        <h1>全球市场情绪</h1>
+      </div>
+      <button id="shareBtn" class="icon-btn" aria-label="分享">↗</button>
+    </header>
+
+    <section class="hero panel">
+      <div class="hero-copy">
+        <span class="live-dot"><i></i> Cloudflare 自动更新</span>
+        <h2 id="globalLabel">数据同步中</h2>
+        <p id="globalSummary">正在读取各市场最新波动率与风险代理指标。</p>
+      </div>
+      <div class="gauge" id="globalGauge" style="--score:0">
+        <div><strong id="globalScore">—</strong><span>/ 100</span></div>
+      </div>
+      <div class="hero-meta">
+        <span id="updatedAt">更新时间：—</span>
+        <span>数值越高，恐慌压力越大</span>
+      </div>
+    </section>
+
+    <nav class="market-tabs" id="marketTabs" aria-label="选择市场"></nav>
+
+    <section class="market-detail panel" id="marketDetail">
+      <div class="detail-head">
+        <div>
+          <p id="marketCode" class="eyebrow">MARKET</p>
+          <h2 id="marketName">—</h2>
+        </div>
+        <span id="sourceBadge" class="badge">等待数据</span>
+      </div>
+      <div class="score-row">
+        <div><span>恐慌压力</span><strong id="marketScore">—</strong></div>
+        <div><span>原始指标</span><strong id="rawValue">—</strong></div>
+        <div><span>历史分位</span><strong id="percentile">—</strong></div>
+      </div>
+      <div class="bar"><i id="scoreBar"></i></div>
+      <div class="status-line"><span id="marketStatus">数据同步中</span><span id="marketChange">—</span></div>
+      <svg id="sparkline" viewBox="0 0 320 82" preserveAspectRatio="none" aria-label="近期趋势图"></svg>
+      <p id="marketInsight" class="insight">等待首次自动更新。</p>
+      <button id="logicToggle" class="logic-toggle" aria-expanded="false">查看构成因子与计算逻辑 <span>＋</span></button>
+      <div id="logicPanel" class="logic-panel" hidden></div>
+    </section>
+
+    <section class="legend panel">
+      <h3>压力区间</h3>
+      <div class="legend-grid">
+        <span><i class="calm"></i>0–20 极度平静</span><span><i class="normal"></i>20–40 正常</span>
+        <span><i class="caution"></i>40–60 谨慎</span><span><i class="tense"></i>60–75 紧张</span>
+        <span><i class="fear"></i>75–90 恐慌</span><span><i class="crisis"></i>90–100 危机</span>
+      </div>
+    </section>
+
+    <footer>公开市场数据仅供研究，不构成投资建议。任务检查时间与行情数据时间不同；交易时段及上游数据源可能存在延迟。</footer>
+  </main>
+  <script src="app.js" defer></script>
+</body>
+</html>
