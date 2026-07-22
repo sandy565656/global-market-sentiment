@@ -16,7 +16,7 @@ function renderMarket(){const m=META[state.selected],d=state.data?.markets?.[sta
 async function load(){try{const endpoint=location.hostname.includes('github.io')?'data/sentiment.json':`api/sentiment?t=${Date.now()}`;const r=await fetch(endpoint,{cache:'no-store'});if(!r.ok)throw Error(r.status);state.data=await r.json()}catch(e){state.data={generatedAt:null,markets:{}}}renderGlobal();renderTabs();renderMarket()}
 $('logicToggle').onclick=()=>{const p=$('logicPanel'),open=p.hidden;p.hidden=!open;$('logicToggle').setAttribute('aria-expanded',open);$('logicToggle').querySelector('span').textContent=open?'−':'＋'};
 const SHARE_URL='https://global-market-sentiment.sunjing55555.workers.dev/';
-const SHARE_PAYLOAD={title:'全球市场情绪｜五大市场恐慌压力仪表盘',text:'一页查看A股、港股、美股、日股与韩股的实时恐慌压力、历史分位和构成逻辑。',url:SHARE_URL};
+const SHARE_PAYLOAD={title:'全球市场情绪｜五大市场恐慌压力仪表盘',url:SHARE_URL};
 const isWechat=/MicroMessenger/i.test(navigator.userAgent);
 function toast(text){const el=$('toast');el.textContent=text;el.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove('show'),1800)}
 function openShare(){if(isWechat){$('wechatTip').hidden=false;document.body.style.overflow='hidden';return}$('shareSheet').hidden=false;document.body.style.overflow='hidden'}
